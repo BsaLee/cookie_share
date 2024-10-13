@@ -3,7 +3,8 @@
 
 # 项目介绍
 
-是一款可以多人/多设备/多浏览器之间共享cookie的插件
+是一款可以多人/多设备/多浏览器之间共享cookie的插件  
+
 
 ## 使用步骤
 
@@ -24,6 +25,8 @@ CREATE TABLE cookies (
 7. 下载worker.js部署到cloudflare的worker
 8. 绑定D1到worker,变量名称为ckdb
 9. 替换浏览器插件中的ck.bhb.us.kg为你的域名
+10. 可以强制读取域名下所有cookie并上传(忽略cookie属性)
+11. 替换cookie前会清空域名下所有旧cookie
 ## 图片展示
 
 ![第一张图片](https://github.com/BsaLee/cookie_share/blob/main/123.png)
