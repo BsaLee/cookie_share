@@ -24,3 +24,7 @@ CREATE TABLE cookies (
 7. 下载worker.js部署到cloudflare的worker
 8. 绑定D1到worker,变量名称为ckdb
 9. 替换浏览器插件中的ck.bhb.us.kg为你的域名
+## 图片展示
+
+![第一张图片](https://github.com/BsaLee/cookie_share/blob/main/123.png)
+![第二张图片](https://github.com/BsaLee/cookie_share/blob/main/456.png)
