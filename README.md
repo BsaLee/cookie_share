@@ -27,6 +27,7 @@ CREATE TABLE cookies (
 9. 替换浏览器插件中的ck.bhb.us.kg为你的域名
 10. 可以强制读取域名下所有cookie并上传(忽略cookie属性)
 11. 替换cookie前会清空域名下所有旧cookie
+12. 增加删除当前页所有cookie功能(导入无效时使用)
 ## 图片展示
 
 ![第一张图片](https://github.com/BsaLee/cookie_share/blob/main/123.png)
