@@ -15,8 +15,12 @@
     </div>
 
     <div id="result">
-        <h3>cookie信息：</h3>
-        <div id="accountsList"></div> <!-- 用于显示多个账号信息 -->
+        <div style="display: flex; align-items: center;"> 
+            <h3 style="margin: 0;">当前网页所有ck:</h3>
+            <button id="deleteAllCookiesButton" style="margin-left: 10px;">删除</button> 
+            <h5 style="margin: 0;">导入无效时使用</h5>
+        </div>
+        <div id="accountsList"></div> 
     </div>
 
     <script src="popup.js"></script>
