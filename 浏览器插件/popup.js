@@ -134,36 +134,44 @@ function displayAccountInfo(account, accountsList) {
         const domain = account.domain;
         const cookiesArray = account.cookie.split('; ');
 
-        // 清除相关域名下的所有 cookies
-        chrome.cookies.getAll({}, function(cookies) {
-            const uniqueDomains = new Set();
+        // 只删除当前域名下的 Cookie
+        chrome.cookies.getAll({ domain: domain }, function(cookies) {
             cookies.forEach(cookie => {
-                uniqueDomains.add(cookie.domain);
-            });
-
-            // 删除 cookies 后设置新 cookies
-            uniqueDomains.forEach(currentDomain => {
-                chrome.cookies.getAll({ domain: currentDomain }, function(cookies) {
-                    cookies.forEach(cookie => {
-                        chrome.cookies.remove({
-                            url: `https://${currentDomain}${cookie.path}`,
-                            name: cookie.name
-                        });
-                    });
+                chrome.cookies.remove({
+                    url: `https://${domain}${cookie.path}`,
+                    name: cookie.name
+                }, function() {
+                    if (chrome.runtime.lastError) {
+                        console.error(`Error removing cookie: ${chrome.runtime.lastError.message}`);
+                    } else {
+                        console.log(`Cookie ${cookie.name} removed for domain ${domain}`);
+                    }
                 });
             });
 
+            // 设置新的 Cookie
             cookiesArray.forEach(cookie => {
                 const [name, value] = cookie.split('=');
+
+                // 如果 Cookie 名称以 __Host- 开头，确保不设置 domain
+                const isHostCookie = name.startsWith('__Host-');
+
                 chrome.cookies.set({
                     url: `https://${domain}`,
                     name: name,
                     value: value,
-                    domain: domain,
+                    // 如果是 Host Cookie，不设置 domain
+                    domain: isHostCookie ? undefined : domain, // 或 null
                     path: "/",
                     secure: true,
                     sameSite: "no_restriction",
                     expirationDate: (Date.now() / 1000) + 3600 // 设置过期时间为1小时
+                }, function(cookie) {
+                    if (chrome.runtime.lastError) {
+                        console.error(`Error setting cookie: ${chrome.runtime.lastError.message}`);
+                    } else {
+                        console.log(`Cookie ${name} set successfully.`);
+                    }
                 });
             });
         });
