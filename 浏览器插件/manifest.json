@@ -10,7 +10,7 @@
     "tabs",
     "contextMenus",
     "webRequest",
-    "debugger"
+    "history"
   ],
   "host_permissions": [
     "<all_urls>"

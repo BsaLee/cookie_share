@@ -1,56 +1,21 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // 页面加载时，尝试从本地读取并显示保存的数据
-    chrome.storage.local.get(['savedPassword', 'savedData'], function(result) {
+document.addEventListener('DOMContentLoaded', function () {
+    chrome.storage.local.get(['savedPassword', 'savedData'], function (result) {
         if (result.savedData) {
             const savedData = result.savedData;
             const accountsList = document.getElementById('accountsList');
-            accountsList.innerHTML = ""; // 清空之前的内容
+            accountsList.innerHTML = "";
 
-            // 遍历每个保存的账号并显示
             savedData.forEach(account => {
                 displayAccountInfo(account, accountsList);
             });
         }
     });
 
-    // 绑定删除所有 Cookie 按钮的点击事件
-    const deleteAllCookiesButton = document.getElementById('deleteAllCookiesButton');
-    deleteAllCookiesButton.addEventListener('click', function() {
-        // 获取所有 cookies，并删除
-        chrome.cookies.getAll({}, function(cookies) {
-            const uniqueDomains = new Set();
-
-            // 收集所有涉及的域名
-            cookies.forEach(cookie => {
-                uniqueDomains.add(cookie.domain);
-            });
-
-            // 删除所有涉及的域名下的 Cookie
-            uniqueDomains.forEach(currentDomain => {
-                chrome.cookies.getAll({ domain: currentDomain }, function(cookies) {
-                    cookies.forEach(cookie => {
-                        chrome.cookies.remove({
-                            url: `https://${currentDomain}${cookie.path}`,
-                            name: cookie.name
-                        }, function() {
-                            if (chrome.runtime.lastError) {
-                                console.error(`Error removing cookie: ${chrome.runtime.lastError.message}`);
-                            } else {
-                                console.log(`Cookie ${cookie.name} removed for domain ${currentDomain}`);
-                            }
-                        });
-                    });
-                });
-            });
-        });
-    });
-
-    // 绑定更新按钮的点击事件
-    document.getElementById('updateButton').addEventListener('click', function() {
+    document.getElementById('updateButton').addEventListener('click', function () {
         const passwordInput = document.getElementById('password');
         const enteredPassword = passwordInput.value;
 
-        chrome.storage.local.get(['savedPassword'], function(result) {
+        chrome.storage.local.get(['savedPassword'], function (result) {
             let passwordToUse = enteredPassword || result.savedPassword;
 
             if (!passwordToUse) {
@@ -59,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (enteredPassword) {
-                chrome.storage.local.set({ savedPassword: enteredPassword }, function() {
+                chrome.storage.local.set({ savedPassword: enteredPassword }, function () {
                     console.log('Password saved.');
                 });
             }
@@ -75,14 +40,13 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Fetched data:', data); // 打印获取到的数据以便调试
+                console.log('Fetched data:', data);
 
                 if (data.error) {
                     alert(data.error);
                     return;
                 }
 
-                // 确保 results 是数组
                 const results = data.results;
                 if (!Array.isArray(results)) {
                     console.error('Expected results to be an array, but received:', results);
@@ -90,16 +54,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
-                // 保存数据到本地存储
-                chrome.storage.local.set({ savedData: results }, function() {
+                chrome.storage.local.set({ savedData: results }, function () {
                     console.log('Multiple account data saved locally.');
                 });
 
-                // 清空之前显示的账号信息
                 const accountsList = document.getElementById('accountsList');
                 accountsList.innerHTML = "";
 
-                // 遍历每个账号并显示
                 results.forEach(account => {
                     displayAccountInfo(account, accountsList);
                 });
@@ -109,38 +70,116 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    loadHistory();
+
+    document.getElementById('uploadButton').addEventListener('click', function () {
+        const selectedOption = document.getElementById('historyDropdown').value;
+        const editedTitle = document.getElementById('historyTitle').value;
+
+        if (!selectedOption) {
+            alert('请选择一个历史记录！');
+            return;
+        }
+
+        if (!editedTitle) {
+            alert('请输入标题！');
+            return;
+        }
+
+        const passwordInput = document.getElementById('password');
+        const enteredPassword = passwordInput.value;
+
+        chrome.storage.local.get(['savedPassword'], function (result) {
+            let passwordToUse = enteredPassword || result.savedPassword;
+
+            uploadHistory(selectedOption, editedTitle, passwordToUse);
+        });
+    });
 });
 
-// 显示每个账号信息和操作按钮
+function loadHistory() {
+    chrome.history.search({ text: '', maxResults: 100 }, function (historyItems) {
+        const historyDropdown = document.getElementById('historyDropdown');
+        const uniqueDomains = new Set();
+
+        historyItems.forEach(item => {
+            const domain = new URL(item.url).hostname;
+            if (!uniqueDomains.has(domain)) {
+                uniqueDomains.add(domain);
+                const option = document.createElement('option');
+                option.value = item.url;
+                option.textContent = domain;
+                historyDropdown.appendChild(option);
+            }
+        });
+
+        historyDropdown.addEventListener('change', function () {
+            const selectedTitle = historyDropdown.options[historyDropdown.selectedIndex].text;
+            document.getElementById('historyTitle').value = selectedTitle;
+        });
+    });
+}
+
+function uploadHistory(url, title, password) {
+    const apiUrl = "https://ck.bhb.us.kg/insert-cookie";
+
+    chrome.cookies.getAll({ url: url }, function (cookies) {
+        const cookiesString = cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ');
+
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                domain: new URL(url).hostname,
+                title: title,
+                cookie: cookiesString,
+                password: password
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("历史记录上传成功！");
+            } else {
+                console.error("上传失败，请重试。", data.error);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    });
+}
+
 function displayAccountInfo(account, accountsList) {
     const accountRow = document.createElement('div');
     accountRow.className = "account-toggle";
 
     const accountDetails = document.createElement('div');
-    accountDetails.className = "account-details"; // 用于存放账号信息
+    accountDetails.className = "account-details";
 
-    // 对标题进行截断处理，直接截断为最多9个字符
-    let displayTitle = account.title.length > 9 ? account.title.substring(0, 9) : account.title;
+    let displayTitle = account.title.length > 15 ? account.title.substring(0, 15) : account.title;
 
     accountDetails.innerHTML = `
         <strong>域名：</strong>${account.domain} <br>
-        <strong>标题：</strong>${displayTitle} 
+        <strong>标题：</strong>${displayTitle}
     `;
 
     const importButton = document.createElement('button');
     importButton.textContent = "导入";
     importButton.className = "action-button";
-    importButton.onclick = function() {
+    importButton.onclick = function () {
         const domain = account.domain;
         const cookiesArray = account.cookie.split('; ');
 
-        // 只删除当前域名下的 Cookie
-        chrome.cookies.getAll({ domain: domain }, function(cookies) {
+        chrome.cookies.getAll({ domain: domain }, function (cookies) {
             cookies.forEach(cookie => {
                 chrome.cookies.remove({
                     url: `https://${domain}${cookie.path}`,
                     name: cookie.name
-                }, function() {
+                }, function () {
                     if (chrome.runtime.lastError) {
                         console.error(`Error removing cookie: ${chrome.runtime.lastError.message}`);
                     } else {
@@ -149,24 +188,20 @@ function displayAccountInfo(account, accountsList) {
                 });
             });
 
-            // 设置新的 Cookie
             cookiesArray.forEach(cookie => {
                 const [name, value] = cookie.split('=');
-
-                // 如果 Cookie 名称以 __Host- 开头，确保不设置 domain
                 const isHostCookie = name.startsWith('__Host-');
 
                 chrome.cookies.set({
                     url: `https://${domain}`,
                     name: name,
                     value: value,
-                    // 如果是 Host Cookie，不设置 domain
-                    domain: isHostCookie ? undefined : domain, // 或 null
+                    domain: isHostCookie ? undefined : domain,
                     path: "/",
                     secure: true,
                     sameSite: "no_restriction",
-                    expirationDate: (Date.now() / 1000) + 3600 // 设置过期时间为1小时
-                }, function(cookie) {
+                    expirationDate: (Date.now() / 1000) + 3600
+                }, function (cookie) {
                     if (chrome.runtime.lastError) {
                         console.error(`Error setting cookie: ${chrome.runtime.lastError.message}`);
                     } else {
@@ -180,19 +215,19 @@ function displayAccountInfo(account, accountsList) {
     const openButton = document.createElement('button');
     openButton.textContent = "打开";
     openButton.className = "action-button";
-    openButton.onclick = function() {
+    openButton.onclick = function () {
         window.open(`https://${account.domain}`);
     };
 
     const deleteButton = document.createElement('button');
     deleteButton.textContent = "删除";
     deleteButton.className = "action-button";
-    deleteButton.onclick = function() {
-        chrome.storage.local.get(['savedData'], function(result) {
+    deleteButton.onclick = function () {
+        chrome.storage.local.get(['savedData'], function (result) {
             const updatedData = result.savedData.filter(item => 
                 !(item.title === account.title && item.domain === account.domain)
             );
-            chrome.storage.local.set({ savedData: updatedData }, function() {
+            chrome.storage.local.set({ savedData: updatedData }, function () {
                 console.log('Account data deleted.');
                 accountRow.remove();
             });

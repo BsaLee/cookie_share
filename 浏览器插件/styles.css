@@ -2,70 +2,105 @@ body {
     font-family: 'Arial', sans-serif;
     padding: 20px;
     width: 320px;
-    background-color: #f4f4f4; /* 背景色 */
-    border-radius: 8px; /* 圆角边框 */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+
 h2 {
-    text-align: center; /* 标题居中 */
-    color: #333; /* 标题颜色 */
+    text-align: center;
+    color: #333;
 }
+
+.dropdown-container, .input-container, .button-container {
+    margin-bottom: 15px;
+}
+
+.dropdown-container {
+    display: flex;
+    flex-direction: column; /* 设置为纵向布局 */
+}
+
+.dropdown-container label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px; /* 调整与下拉栏的间距 */
+}
+
+.dropdown-container select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px; /* 下拉栏与标题输入框之间的间距 */
+}
+
 .input-container {
-    display: flex; /* 使用 Flexbox 布局 */
-    align-items: center; /* 垂直居中对齐 */
-    margin-bottom: 15px; /* 底部间距 */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 对齐输入框和按钮 */
 }
-label {
-    font-weight: bold; /* 标签加粗 */
-    margin-right: 10px; /* 右侧留空间 */
-    color: #555; /* 标签颜色 */
+
+.input-container input[type="text"],
+.input-container input[type="password"] {
+    flex-grow: 1; /* 使输入框占据剩余空间 */
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+    margin-right: 10px; /* 输入框和按钮之间的间距 */
 }
-input[type="password"] {
-    width: auto; /* 适应内容宽度 */
-    flex-grow: 1; /* 占据可用空间 */
-    margin-right: 10px; /* 右侧留空间 */
-    padding: 8px; /* 增加内部填充 */
-    font-size: 14px; /* 更大字体 */
-    border: 1px solid #ccc; /* 边框 */
-    border-radius: 4px; /* 圆角 */
-    transition: border-color 0.3s; /* 边框颜色变化 */
-}
-input[type="password"]:focus {
-    border-color: #007bff; /* 聚焦时边框颜色 */
-    outline: none; /* 去掉默认轮廓 */
-}
+
 button {
-    padding: 6px 10px; /* 增加上下左右填充 */
-    font-size: 12px; /* 字体大小 */
-    color: white; /* 字体颜色 */
-    background-color: #007bff; /* 按钮背景色 */
-    border: none; /* 去掉边框 */
-    border-radius: 4px; /* 圆角 */
-    cursor: pointer; /* 鼠标指针 */
-    transition: background-color 0.3s; /* 背景色变化 */
-    margin-left: 5px; /* 按钮之间的间距 */
+    padding: 6px 10px;
+    font-size: 12px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
+
 button:hover {
-    background-color: #0056b3; /* 悬停时背景颜色 */
+    background-color: #0056b3;
 }
+
+#uploadButton {
+    background-color: #28a745; /* 上传按钮的背景色 */
+}
+
+#uploadButton:hover {
+    background-color: #218838; /* 上传按钮悬停时的颜色 */
+}
+
+.button-container {
+    margin-top: 20px;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
 .account-toggle {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* 垂直居中对齐 */
+    align-items: center;
     margin-bottom: 10px;
     padding: 10px;
-    border: 1px solid #ccc; /* 添加边框以分隔每个账号 */
-    border-radius: 5px; /* 圆角 */
-    background-color: #fff; /* 背景颜色 */
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
+
 .account-details {
-    flex-grow: 1; /* 使账号信息占用可用空间 */
-    margin-right: 10px; /* 右侧留一些空间 */
-    color: #333; /* 账号信息颜色 */
+    flex-grow: 1;
+    margin-right: 10px;
+    color: #333;
 }
+
 #result {
     margin-top: 20px;
-    border-top: 1px solid #ccc; /* 顶部边框 */
-    padding-top: 10px; /* 上内边距 */
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
 }

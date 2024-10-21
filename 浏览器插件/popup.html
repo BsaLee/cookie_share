@@ -4,23 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cookie Setter</title>
-    <link rel="stylesheet" href="styles.css"> <!-- 引入外部CSS文件 -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h2>路桥CK同步-控制面板</h2>
+    
+    <!-- 历史记录部分 -->
+    <div class="dropdown-container">
+        <label for="historyDropdown">本地历史记录：</label>
+        <select id="historyDropdown">
+            <option value="" disabled selected>请选择历史记录</option>
+        </select>
+    </div>
     <div class="input-container">
-        <label for="password">密码：</label>
-        <input type="password" id="password" placeholder="请输入密码">
-        <button id="updateButton">更新</button>
+        <input type="text" id="historyTitle" placeholder="编辑标题">
+        <button id="uploadButton">上传</button>
     </div>
 
+    <!-- 账号列表 -->
     <div id="result">
         <div style="display: flex; align-items: center;"> 
-            <h3 style="margin: 0;">当前网页所有ck:</h3>
-            <button id="deleteAllCookiesButton" style="margin-left: 10px;">删除</button> 
-            <h5 style="margin: 0;">导入无效时使用</h5>
         </div>
         <div id="accountsList"></div> 
+    </div>
+
+    <!-- 底部的输入密码和更新按钮 -->
+    <div class="button-container">
+        <div class="input-container">
+            <label for="password">密码：</label>
+            <input type="password" id="password" placeholder="请输入密码">
+            <button id="updateButton">更新</button>
+        </div>
     </div>
 
     <script src="popup.js"></script>
